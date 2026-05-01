@@ -3,113 +3,422 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For You ❤️</title>
+    <title>For You Forever ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #0a0a0a;
-            color: #ff4d6d; /* Soft romantic pink/red */
-            font-family: 'Courier New', Courier, monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 30%, #0c0c0c 70%, #0a0a0a 100%);
+            color: #ff69b4;
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            cursor: none;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ff69b4, transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
+        }
+
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
-            flex-direction: column; /* Stack text and heart vertically */
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .page.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .page.exit {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+
+        .container {
+            max-width: 900px;
+            padding: 0 30px;
             text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff69b4, #ff1493, #ffb6c1);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 40px;
+            animation: gradientShift 4s ease-in-out infinite;
+            text-shadow: 0 8px 32px rgba(255, 105, 180, 0.3);
         }
 
         #typing-container {
-            font-size: 1.5rem;
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            line-height: 1.7;
             white-space: pre-wrap;
-            max-width: 80%;
-            border-right: 3px solid #ff4d6d;
-            padding-right: 5px;
-            animation: blink 0.7s infinite;
-            margin-bottom: 20px;
+            max-width: 90%;
+            margin: 0 auto 50px;
+            border-right: 3px solid #ff69b4;
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            background: rgba(255, 105, 180, 0.06);
+            box-shadow: 
+                0 20px 60px rgba(255, 105, 180, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: blink 1s infinite;
         }
 
-        /* The Heart Styles */
-        #heart-container {
-            display: none; /* Hidden by default */
-            flex-direction: column;
-            align-items: center;
-            animation: fadeIn 2s ease-in; /* Smooth fade in */
+        .hearts-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 60px 0;
+            max-width: 600px;
         }
 
         .heart {
-            background-color: #ff4d6d;
-            display: inline-block;
-            height: 50px;
-            margin: 0 10px;
+            background: linear-gradient(145deg, #ff69b4, #ff1493);
+            height: 70px;
+            width: 70px;
             position: relative;
-            top: 0;
             transform: rotate(-45deg);
-            width: 50px;
-            animation: beat 0.8s infinite; /* Making it pulse */
+            border-radius: 12px;
+            box-shadow: 
+                0 15px 40px rgba(255, 105, 180, 0.5),
+                inset 0 3px 8px rgba(255, 255, 255, 0.25);
+            animation: beat 1.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        .heart:before, .heart:after {
+        .heart:hover {
+            transform: rotate(-45deg) scale(1.15);
+            box-shadow: 
+                0 25px 60px rgba(255, 105, 180, 0.7),
+                inset 0 3px 8px rgba(255, 255, 255, 0.35);
+        }
+
+        .heart:before,
+        .heart:after {
             content: "";
-            background-color: #ff4d6d;
+            background: inherit;
             border-radius: 50%;
-            height: 50px;
+            height: 70px;
             position: absolute;
-            width: 50px;
+            width: 70px;
+            box-shadow: inherit;
         }
 
-        .heart:before { top: -25px; left: 0; }
-        .heart:after { left: 25px; top: 0; }
+        .heart:before { top: -35px; left: 0; }
+        .heart:after { left: 35px; top: 0; }
 
-        .love-text {
+        .proposal-section {
+            background: rgba(255, 105, 180, 0.08);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 105, 180, 0.2);
+            border-radius: 30px;
+            padding: 60px 50px;
+            max-width: 600px;
+            box-shadow: 0 30px 80px rgba(255, 105, 180, 0.2);
+            animation: glowPulse 3s ease-in-out infinite alternate;
+        }
+
+        .proposal-question {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 50px;
+            line-height: 1.3;
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .proposal-btn {
+            padding: 20px 50px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            font-family: 'Playfair Display', serif;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+            min-width: 160px;
+            backdrop-filter: blur(20px);
+        }
+
+        .yes-btn {
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            color: white;
+            box-shadow: 0 20px 50px rgba(255, 105, 180, 0.6);
+        }
+
+        .yes-btn:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 30px 70px rgba(255, 105, 180, 0.8);
+        }
+
+        .no-btn {
+            background: transparent;
+            color: #ff69b4;
+            border: 2px solid rgba(255, 105, 180, 0.5);
+            box-shadow: inset 0 0 0 2px rgba(255, 105, 180, 0.3);
+        }
+
+        .no-btn:hover {
+            transform: translateY(-5px);
+            border-color: #ff69b4;
+            box-shadow: inset 0 0 0 2px #ff69b4, 0 15px 40px rgba(255, 105, 180, 0.3);
+        }
+
+        .success-message {
+            display: none;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #ff69b4;
+            animation: celebrate 1s ease-out;
+            text-align: center;
             margin-top: 40px;
-            font-size: 1.8rem;
-            font-weight: bold;
         }
 
-        @keyframes blink { 50% { border-color: transparent; } }
+        @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        @keyframes blink { 0%, 50% { border-color: #ff69b4; } 51%, 100% { border-color: transparent; } }
+        @keyframes beat { 0%, 70%, 100% { transform: scale(1) rotate(-45deg); } 14%, 42% { transform: scale(1.3) rotate(-45deg); } }
+        @keyframes glowPulse { 0% { box-shadow: 0 30px 80px rgba(255, 105, 180, 0.2); } 100% { box-shadow: 0 30px 80px rgba(255, 105, 180, 0.4); } }
+        @keyframes celebrate { 0% { transform: scale(0) rotate(180deg); opacity: 0; } 50% { transform: scale(1.2); } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        @keyframes beat {
-            0% { transform: scale(1) rotate(-45deg); }
-            50% { transform: scale(1.2) rotate(-45deg); }
-            100% { transform: scale(1) rotate(-45deg); }
+        @media (max-width: 768px) {
+            .buttons-container { gap: 20px; }
+            .proposal-btn { padding: 18px 40px; font-size: 1.2rem; min-width: 140px; }
+            .hearts-display { gap: 15px; }
+            .heart { height: 55px; width: 55px; }
+            .heart:before, .heart:after { height: 55px; width: 55px; }
+            .heart:before { top: -27px; } .heart:after { left: 27px; }
         }
     </style>
 </head>
 <body>
+    <div class="custom-cursor"></div>
 
-    <div id="typing-container"></div>
+    <!-- Page 1: Introduction -->
+    <div class="page active" data-page="1">
+        <div class="container">
+            <h1 class="page-title">To My Forever Love</h1>
+            <div id="typing-container-1"></div>
+        </div>
+    </div>
 
-    <div id="heart-container">
-        <div class="heart"></div>
-        <div class="love-text">i love u babe</div>
+    <!-- Page 2: Sweet Memories -->
+    <div class="page" data-page="2">
+        <div class="container">
+            <h1 class="page-title">Our Beautiful Journey</h1>
+            <div id="typing-container-2"></div>
+            <div class="hearts-display">
+                <div class="heart" style="animation-delay: 0s"></div>
+                <div class="heart" style="animation-delay: 0.15s"></div>
+                <div class="heart" style="animation-delay: 0.3s"></div>
+                <div class="heart" style="animation-delay: 0.45s"></div>
+                <div class="heart" style="animation-delay: 0.6s"></div>
+                <div class="heart" style="animation-delay: 0.75s"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 3: The Proposal -->
+    <div class="page" data-page="3">
+        <div class="container">
+            <div class="proposal-section">
+                <h1 class="proposal-question">Wanna be my fiancée? 💍</h1>
+                <div class="buttons-container">
+                    <button class="proposal-btn yes-btn" onclick="handleYes()">YES ❤️</button>
+                    <button class="proposal-btn no-btn" id="noButton" onclick="handleNo()">NO 😢</button>
+                </div>
+                <div class="success-message" id="successMessage">I KNEW IT! 💕 I LOVE YOU FOREVER!</div>
+            </div>
+        </div>
     </div>
 
     <script>
-        const message = "babe ik you seeing this massage and ik its not alot like i wanted to create more stuff for u but this is what i did tysm for being my girlfriend i love you so much babe ❤️";
-        
-        const container = document.getElementById('typing-container');
-        const heartBox = document.getElementById('heart-container');
-        let index = 0;
+        const messages = {
+            1: `babe... every single day with you feels like a dream i never want to wake from 💭
 
-        function typeEffect() {
-            if (index < message.length) {
-                container.textContent += message.charAt(index);
-                index++;
-                setTimeout(typeEffect, 50); 
+from our first awkward "hello" to these quiet moments where words aren't even needed...
+
+you've been my safe place, my biggest cheerleader, my reason to smile through everything.
+
+thank you for loving me completely, exactly as i am. you're my everything. 💕`,
+            
+            2: `remember our late-night drives? laughing until we cried? 
+those cozy movie nights wrapped in each other's arms?
+
+every memory with you is my favorite. you've turned my ordinary days into extraordinary love stories.
+
+i fall for you more every single day, babe. you're my heart's home. 🏠❤️`
+        };
+
+        let currentPage = 1;
+        let typingIndex = 0;
+        let currentTypingContainer = null;
+
+        const cursor = document.querySelector('.custom-cursor');
+
+        // Custom cursor
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        function initPage(pageNum) {
+            const container = document.getElementById(`typing-container-${pageNum}`);
+            currentTypingContainer = container;
+            typingIndex = 0;
+            container.textContent = '';
+            container.style.borderRight = '3px solid #ff69b4';
+            container.style.animation = 'blink 1s infinite';
+            typeMessage(messages[pageNum]);
+        }
+
+        function typeMessage(message) {
+            if (typingIndex < message.length) {
+                currentTypingContainer.textContent += message.charAt(typingIndex);
+                typingIndex++;
+                
+                const char = message.charAt(typingIndex - 1);
+                const delay = char === '\n' ? 200 : char === ' ' ? 40 : 70;
+                
+                setTimeout(() => typeMessage(message), delay);
             } else {
-                container.style.borderRight = "none";
-                showHeart(); // Call the heart function when done
+                currentTypingContainer.style.borderRight = 'none';
+                currentTypingContainer.style.animation = 'none';
+                setTimeout(() => nextPage(), 2000);
             }
         }
 
-        function showHeart() {
-            heartBox.style.display = "flex"; // Make heart visible
+        function nextPage() {
+            const pages = document.querySelectorAll('.page');
+            const currentPageEl = document.querySelector(`[data-page="${currentPage}"]`);
+            
+            currentPageEl.classList.remove('active');
+            currentPageEl.classList.add('exit');
+            
+            setTimeout(() => {
+                currentPage++;
+                if (currentPage <= 3) {
+                    const nextPageEl = document.querySelector(`[data-page="${currentPage}"]`);
+                    nextPageEl.classList.add('active');
+                    if (currentPage < 3) {
+                        initPage(currentPage);
+                    }
+                }
+            }, 1200);
         }
 
-        window.onload = typeEffect;
+        function handleYes() {
+            document.getElementById('successMessage').style.display = 'block';
+            document.querySelector('.proposal-section').innerHTML = `
+                <h1 class="proposal-question" style="font-size: 2.8rem;">SHE SAID YES! 💍✨</h1>
+                <div style="font-size: 1.6rem; margin-top: 30px; opacity: 0.9;">
+                    I love you more than yesterday, but not as much as tomorrow 💕
+                </div>
+            `;
+            
+            // Celebration hearts
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => createCelebrationHeart(), i * 100);
+            }
+        }
+
+        function handleNo() {
+            const noBtn = document.getElementById('noButton');
+            
+            // Move NO button randomly
+            const x = (Math.random() - 0.5) * 400;
+            const y = (Math.random() - 0.5) * 300;
+            noBtn.style.transform = `translate(${x}px, ${y}px)`;
+            noBtn.style.transition = 'transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+            
+            setTimeout(() => {
+                // Turn NO into YES
+                noBtn.textContent = 'YES ❤️';
+                noBtn.className = 'proposal-btn yes-btn';
+                noBtn.style.transform = 'translate(0, 0)';
+                noBtn.onclick = handleYes;
+            }, 500);
+        }
+
+        function createCelebrationHeart() {
+            const heart = document.createElement('div');
+            heart.style.cssText = `
+                position: fixed;
+                font-size: 24px;
+                color: #ff69b4;
+                left: ${Math.random() * 100}vw;
+                animation: floatUp 3s ease-out forwards;
+                z-index: 10000;
+                pointer-events: none;
+            `;
+            heart.innerHTML = '💖';
+            document.body.appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 3000);
+        }
+
+        // Start the experience
+        window.addEventListener('load', () => {
+            initPage(1);
+        });
+
+        // CSS for celebration
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes floatUp {
+                0% { transform: translateY(100vh) scale(0); opacity: 1; }
+                50% { opacity: 1; }
+                100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
